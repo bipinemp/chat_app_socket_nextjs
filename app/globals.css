@@ -88,4 +88,7 @@
   h5 {
     @apply text-[0.83rem];
   }
+  html {
+    @apply scroll-smooth;
+  }
 }

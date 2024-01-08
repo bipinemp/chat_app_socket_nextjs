@@ -4,6 +4,21 @@ import { Server, Socket } from "socket.io";
 import cors from "cors";
 const PORT = process.env.PORT || 8000;
 
+interface ChatMessage {
+  senderId: string;
+  message: string;
+  createdAt: string;
+  image?: string;
+  username?: string;
+}
+
+interface UserData {
+  username: string;
+  email?: string;
+  id?: string;
+  image?: string;
+}
+
 const app = express();
 
 app.use(cors());
@@ -21,28 +36,28 @@ const io = new Server(server, {
 
 app.get("/", (req, res) => res.send("Hello from server"));
 
-interface ChatMessage {
-  username: string;
-  message: string;
-}
-
 io.on("connection", (socket: Socket) => {
-  console.log("A user connected:", socket.id);
-  socket.on("join_room", (roomId) => {
-    socket.join(roomId);
-    console.log(`user with id-${socket.id} joined room - ${roomId}`);
-  });
+  console.log("A user connected");
 
-  socket.on("send_msg", (data) => {
-    console.log("Received message to send:", data);
-    // Emit the received message back to the sender
-    socket.emit("receive_msg", data);
-    // This will send a message to a specific room ID
-    socket.to(data.roomId).emit("receive_msg", data);
-  });
+  socket.on(
+    "joinRoom",
+    ({ userData, roomId }: { userData: UserData; roomId: string }) => {
+      if (userData?.username) {
+        socket.join(roomId);
+        // socket.broadcast.to(roomId).emit("chatMessage", {
+        //   username: "Admin",
+        //   message: `${userData?.username} has joined the room.`,
+        // });
+      }
+    }
+  );
 
   socket.on("disconnect", () => {
-    console.log("A user disconnected:", socket.id);
+    console.log("User disconnected");
+  });
+
+  socket.on("chatMessage", (message: ChatMessage, roomId: string) => {
+    io.to(roomId).emit("chatMessage", message);
   });
 });
 

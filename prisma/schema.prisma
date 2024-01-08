@@ -55,11 +55,44 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  friends Friend[]
+  sentFriendRequests     Friend[] @relation("SentFriendRequests")
+  receivedFriendRequests Friend[] @relation("ReceivedFriendRequests")
+
+  friends          Friend[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
 }
 
 model Friend {
-  id     String  @id @default(uuid())
+  id     String  @id @default(cuid())
   User   User?   @relation(fields: [userId], references: [id])
   userId String?
+
+  requester   User?   @relation("SentFriendRequests", fields: [requesterId], references: [id])
+  receiver    User?   @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+  requesterId String?
+  receiverId  String?
+
+  status FriendRequestStatus @default(PENDING)
+
+  @@unique([requesterId, receiverId])
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model Message {
+  id         String  @id @default(cuid())
+  message    String
+  sender     User    @relation("SentMessages", fields: [senderId], references: [id])
+  senderId   String
+  receiver   User    @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId String
+  image      String?
+  username   String?
+
+  createdAt DateTime @default(now())
 }

@@ -30,6 +30,7 @@ const LoginForm: FC<LoginFormProps> = ({}) => {
         password: data.password,
         redirect: false,
       });
+      revalidatePath("/");
       console.log(signInData);
     } catch (error) {
       console.log(error);

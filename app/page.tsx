@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth";
 
 export default async function Home() {
   const data = await getServerSession(authOptions);
-  console.log(data);
 
   return (
     <main className="mt-10 flex flex-col gap-4">

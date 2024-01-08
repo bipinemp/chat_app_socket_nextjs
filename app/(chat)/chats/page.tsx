@@ -1,11 +1,5 @@
-"use client";
-
-import { FC } from "react";
-
-interface pageProps {}
-
-const page: FC<pageProps> = ({}) => {
-  return <div>page</div>;
+const page = () => {
+  return <div className="w-full"></div>;
 };
 
 export default page;
