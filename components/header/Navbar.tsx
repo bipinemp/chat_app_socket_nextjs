@@ -4,8 +4,8 @@ import Container from "../Container";
 import { Button } from "../ui/button";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import { signOut } from "next-auth/react";
 import LogOut from "./LogOut";
+import Notification from "./Notification";
 
 const Navbar = async () => {
   const session = await getServerSession(authOptions);
@@ -17,9 +17,11 @@ const Navbar = async () => {
           <li>
             <Link href={"/"}>Home</Link>
           </li>
+
           <li>
             {session?.user?.email ? (
               <div className="flex items-center gap-4">
+                <Notification />
                 <p>{session?.user?.username}</p>
                 <Link href={"/chats"}>Chats</Link>
                 <LogOut />

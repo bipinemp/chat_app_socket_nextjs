@@ -5,6 +5,8 @@ import "./globals.css";
 import Navbar from "@/components/header/Navbar";
 import { Toaster } from "@/components/ui/sonner";
 import { getServerSession } from "next-auth";
+import PathTracker from "@/components/PathTracker";
+import QueryProvider from "@/components/QueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,11 +24,15 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider session={session}>
-          <Navbar />
-          {children}
-          <Toaster position="bottom-right" />
-        </SessionProvider>
+        <QueryProvider>
+          <SessionProvider session={session}>
+            <PathTracker>
+              <Navbar />
+              {children}
+              <Toaster position="bottom-right" />
+            </PathTracker>
+          </SessionProvider>
+        </QueryProvider>
       </body>
     </html>
   );

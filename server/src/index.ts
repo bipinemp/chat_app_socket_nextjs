@@ -13,11 +13,29 @@ interface ChatMessage {
 }
 
 interface UserData {
-  username: string;
-  email?: string;
   id?: string;
-  image?: string;
+  username: string;
+  password?: string | null;
+  email?: string;
+  emailVerified: string | null;
+  image?: string | null;
 }
+
+interface FriendRequest {
+  requester: UserData;
+}
+
+type FriendReqs = FriendRequest[];
+
+interface NotificationType {
+  message: string;
+  username: string;
+  image?: string;
+  senderId?: string;
+  receiverId: string;
+}
+
+let FriendReqs: FriendReqs = [];
 
 const app = express();
 
@@ -52,12 +70,22 @@ io.on("connection", (socket: Socket) => {
     }
   );
 
+  socket.on("join_notification", (userId: string) => {
+    if (userId) {
+      socket.join(userId);
+    }
+  });
+
   socket.on("disconnect", () => {
     console.log("User disconnected");
   });
 
   socket.on("chatMessage", (message: ChatMessage, roomId: string) => {
     io.to(roomId).emit("chatMessage", message);
+  });
+
+  socket.on("chat_notification", (message: NotificationType) => {
+    io.to(message.receiverId).emit("chat_notification", message);
   });
 });
 

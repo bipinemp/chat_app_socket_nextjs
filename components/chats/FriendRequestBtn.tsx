@@ -4,6 +4,8 @@ import { FC } from "react";
 import { Button } from "../ui/button";
 import { UserPlus } from "lucide-react";
 import axios from "axios";
+import socket from "@/lib/socket";
+import { useSession } from "next-auth/react";
 
 interface FriendRequestBtnProps {
   requesterId: string;
@@ -14,17 +16,24 @@ const FriendRequestBtn: FC<FriendRequestBtnProps> = ({
   requesterId,
   receiverId,
 }) => {
-  const sendFriendReqest = () => {
-    try {
-      const response = axios.post(
-        "http://localhost:3000/api/chat/friendrequest",
-        {
-          receiverId,
-          requesterId,
-        }
-      );
+  const session = useSession();
 
-      console.log(response);
+  const sendFriendReqest = async () => {
+    const Notification = {
+      username: session?.data?.user?.username,
+      message: "Sent a friend request",
+      receiverId: receiverId,
+      type: "REQ",
+      read: false,
+    };
+
+    socket.emit("chat_notification", Notification);
+
+    try {
+      await axios.post("http://localhost:3000/api/chat/friendrequest", {
+        receiverId,
+        requesterId,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -32,7 +41,7 @@ const FriendRequestBtn: FC<FriendRequestBtnProps> = ({
 
   return (
     <div>
-      <Button onClick={sendFriendReqest}>
+      <Button type="button" onClick={sendFriendReqest}>
         <UserPlus className="w-5 h-5" />
       </Button>
     </div>

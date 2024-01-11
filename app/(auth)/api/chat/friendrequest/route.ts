@@ -29,14 +29,34 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "User not Found" }, { status: 404 });
     }
 
-    // check if Friend request already exists
-    const FriendReqExists = await db.friend.findUnique({
+    // check if Friend request already exists in either direction
+    const friendRequestExists = await db.friend.findFirst({
       where: {
-        requesterId_receiverId: { receiverId, requesterId },
+        // Check if user1 sent a request to user2
+        requesterId: requesterId,
+        receiverId: receiverId,
       },
     });
 
-    if (FriendReqExists) {
+    if (friendRequestExists) {
+      return NextResponse.json(
+        {
+          message: "Friend Request already Sent or Received",
+        },
+        { status: 400 }
+      );
+    }
+
+    // check if reciprocal Friend request already exists
+    const reciprocalFriendRequestExists = await db.friend.findFirst({
+      where: {
+        // Check if user2 sent a request to user1
+        requesterId: receiverId,
+        receiverId: requesterId,
+      },
+    });
+
+    if (reciprocalFriendRequestExists) {
       return NextResponse.json(
         {
           message: "Friend Request already Sent or Received",

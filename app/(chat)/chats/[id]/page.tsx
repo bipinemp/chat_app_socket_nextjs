@@ -7,11 +7,11 @@ import axios from "axios";
 import clsx from "clsx";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useState, useEffect } from "react";
-import io from "socket.io-client";
+import { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
-
-const socket = io("ws://localhost:8000");
+import { useWhichUserChatOpened } from "@/store/store";
+import { usePathname } from "next/navigation";
+import socket from "@/lib/socket";
 
 interface ChatMessage {
   id?: string;
@@ -33,6 +33,10 @@ const Page = ({ params }: { params: { id: string } }) => {
   const [roomId, setRoomId] = useState("");
   const [message, setMessage] = useState("");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const { setUserId } = useWhichUserChatOpened();
+
+  // for scrolling to bottom of chats
+  const bottomOfChatsRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const fetchInitialMessages = async () => {
@@ -48,6 +52,7 @@ const Page = ({ params }: { params: { id: string } }) => {
     };
 
     fetchInitialMessages();
+    setUserId(params.id);
   }, [params.id]);
 
   useEffect(() => {
@@ -96,12 +101,29 @@ const Page = ({ params }: { params: { id: string } }) => {
       username: session?.data?.user?.username,
       message,
     };
+
+    const Notification = {
+      username: session?.data?.user?.username,
+      message,
+      senderId: session?.data?.user?.id,
+      receiverId: params.id,
+      type: "CHAT",
+      read: false,
+    };
     if (message.trim() !== "") {
       socket.emit("chatMessage", ChatMessage, roomId);
       sendMessage();
       setMessage("");
+      socket.emit("chat_notification", Notification);
     }
   };
+
+  // for scrolling to bottom of chats
+  useEffect(() => {
+    if (bottomOfChatsRef.current) {
+      bottomOfChatsRef.current.scrollIntoView();
+    }
+  }, [chatMessages]);
 
   return (
     <div className="w-full py-7 flex flex-col gap-5">
@@ -109,7 +131,7 @@ const Page = ({ params }: { params: { id: string } }) => {
         <h2>UserDetail</h2>
       </div>
 
-      <div className="flex flex-col-reverse gap-5 h-[400px] overflow-scroll overflow-x-hidden px-5 py-4">
+      <div className="flex flex-col gap-5 h-[400px] overflow-scroll overflow-x-hidden px-5 py-4">
         {chatMessages.length !== 0 &&
           chatMessages.map((chat) => {
             const isSender = chat.senderId === session?.data?.user?.id;
@@ -158,6 +180,7 @@ const Page = ({ params }: { params: { id: string } }) => {
               </div>
             );
           })}
+        {chatMessages.length > 0 && <span ref={bottomOfChatsRef}></span>}
       </div>
       <form
         onSubmit={handleSendMessage}

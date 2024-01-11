@@ -44,13 +44,17 @@ const AcceptDecline: FC<AcceptDeclineProps> = ({ receiverId, requesterId }) => {
   }
 
   return (
-    <div className="flex items-center gap-4">
-      <Button onClick={() => acceptFriendRequest(requesterId || "")}>
+    <div className="flex items-center gap-2">
+      <Button
+        onClick={() => acceptFriendRequest(requesterId || "")}
+        size="icon"
+      >
         <Check className="w-5 h-5" />
       </Button>
       <Button
         variant="destructive"
         onClick={() => rejectFriendRequest(requesterId || "")}
+        size="icon"
       >
         <X className="w-5 h-5" />
       </Button>
