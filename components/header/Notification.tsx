@@ -16,9 +16,9 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 
-interface NotificationProps {}
 
-const Notification: FC<NotificationProps> = ({}) => {
+
+const Notification = () => {
   const session = useSession();
   const { notifications, setNotifications, userId, markAllAsread } =
     useWhichUserChatOpened();
