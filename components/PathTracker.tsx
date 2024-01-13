@@ -11,11 +11,13 @@ interface Props {
 const PathTracker: React.FC<Props> = ({ children }) => {
   const pathname = usePathname();
   const { setUserId } = useWhichUserChatOpened();
+
   useEffect(() => {
     if (!pathname.startsWith("/chats/")) {
       setUserId("");
     }
   }, [pathname]);
+
   return <div>{children}</div>;
 };
 
