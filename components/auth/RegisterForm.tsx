@@ -1,6 +1,5 @@
 "use client";
 
-import { FC } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useForm } from "react-hook-form";
@@ -10,9 +9,12 @@ import Link from "next/link";
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const RegisterForm = () => {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -24,6 +26,7 @@ const RegisterForm = () => {
 
   async function onsubmit(data: TRegister) {
     try {
+      setLoading(true);
       const response = await axios.post(
         "http://localhost:3000/api/user/register",
         data
@@ -33,11 +36,12 @@ const RegisterForm = () => {
         router.push("/login");
       }
     } catch (error: any) {
-      console.log(error);
       if (error instanceof AxiosError) {
         toast.error(error.message);
       }
       toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   }
   return (
@@ -80,7 +84,15 @@ const RegisterForm = () => {
             {errors.password?.message}
           </span>
         </div>
-        <Button type="submit">Register</Button>
+        <Button type="submit">
+          {loading ? (
+            <div className="flex items-center justify-center gap-3">
+              <Loader2 className="w-5 h-5 animate-spin" />
+            </div>
+          ) : (
+            "Register"
+          )}
+        </Button>
       </form>
       <div className="flex items-center gap-3 justify-center">
         Already have an account?{" "}

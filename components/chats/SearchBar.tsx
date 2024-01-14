@@ -49,8 +49,8 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
     ];
     return friends.some(
       (friend) =>
-        friend.receiver.id === session?.data?.user?.id ||
-        friend.requester.id === session?.data?.user?.id
+        friend?.receiver?.id === session?.data?.user?.id ||
+        friend?.requester?.id === session?.data?.user?.id
     );
   };
 

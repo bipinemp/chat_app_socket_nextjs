@@ -35,6 +35,9 @@ const Sidebar: React.FC<SidebarProps> = ({
               <Loader2 className="w-6 h-6 animate-spin text-center" />
             </div>
           )}
+          {friends?.length === 0 && (
+            <p className="text-center text-destructive font-semibold">Empty</p>
+          )}
           {friends?.map((friend) => {
             const friendUser: UserDetail =
               friend.requester?.id === session?.data?.user?.id

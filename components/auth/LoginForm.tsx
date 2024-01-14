@@ -1,6 +1,6 @@
 "use client";
 
-import { FC } from "react";
+import { FC, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useForm } from "react-hook-form";
@@ -11,10 +11,14 @@ import { signIn } from "next-auth/react";
 import Google from "@/public/images/google.png";
 import Image from "next/image";
 import { revalidatePath } from "next/cache";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 interface LoginFormProps {}
 
 const LoginForm: FC<LoginFormProps> = ({}) => {
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -25,15 +29,23 @@ const LoginForm: FC<LoginFormProps> = ({}) => {
 
   async function onsubmit(data: TLogin) {
     try {
+      setLoading(true);
       const signInData = await signIn("credentials", {
         email: data.email,
         password: data.password,
         redirect: false,
       });
-      revalidatePath("/");
-      console.log(signInData);
-    } catch (error) {
-      console.log(error);
+
+      if (signInData?.error === "CredentialsSignin") {
+        toast.error("Email or Password didn't match");
+      }
+    } catch (error: any) {
+      if (error instanceof AxiosError) {
+        toast.error(error.message);
+      }
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -42,10 +54,13 @@ const LoginForm: FC<LoginFormProps> = ({}) => {
       const signInData = await signIn("google", {
         redirect: false,
       });
+
       revalidatePath("/");
-      console.log(signInData);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      if (error instanceof AxiosError) {
+        toast.error(error.message);
+      }
+      toast.error(error.message);
     }
   }
   return (
@@ -77,7 +92,15 @@ const LoginForm: FC<LoginFormProps> = ({}) => {
             {errors.password?.message}
           </span>
         </div>
-        <Button type="submit">Login</Button>
+        <Button type="submit">
+          {loading ? (
+            <div className="flex items-center justify-center gap-3">
+              <Loader2 className="w-5 h-5 animate-spin" />
+            </div>
+          ) : (
+            "Login"
+          )}
+        </Button>
       </form>
       <div className="flex items-center gap-2 justify-center">
         Don't have an account?{" "}
