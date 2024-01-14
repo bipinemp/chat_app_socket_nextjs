@@ -14,11 +14,13 @@ import { revalidatePath } from "next/cache";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 
 interface LoginFormProps {}
 
 const LoginForm: FC<LoginFormProps> = ({}) => {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -39,11 +41,15 @@ const LoginForm: FC<LoginFormProps> = ({}) => {
       if (signInData?.error === "CredentialsSignin") {
         toast.error("Email or Password didn't match");
       }
+      if (signInData?.status === 200) {
+        router.refresh();
+        router.push("/");
+        revalidatePath("/");
+      }
     } catch (error: any) {
       if (error instanceof AxiosError) {
         toast.error(error.message);
       }
-      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -51,7 +57,7 @@ const LoginForm: FC<LoginFormProps> = ({}) => {
 
   async function handleSignGoogle() {
     try {
-      const signInData = await signIn("google", {
+      await signIn("google", {
         redirect: false,
       });
 
