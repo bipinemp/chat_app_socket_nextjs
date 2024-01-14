@@ -35,6 +35,16 @@ export async function GET(request: NextRequest) {
           },
         ],
       },
+      include: {
+        sentFriendRequests: {
+          where: { status: "ACCEPTED" },
+          include: { receiver: true },
+        },
+        receivedFriendRequests: {
+          where: { status: "ACCEPTED" },
+          include: { requester: true },
+        },
+      },
     });
 
     if (!users || users.length === 0) {

@@ -30,7 +30,19 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
     enabled: debouncedSearchTerm !== "",
   });
 
-  // console.log("Search results : ", data?.users);
+  console.log(data);
+
+  const isFriend = (user: any) => {
+    const friends = [
+      ...user.sentFriendRequests,
+      ...user.receivedFriendRequests,
+    ];
+    return friends.some(
+      (friend) =>
+        friend.receiver.id === session?.data?.user?.id ||
+        friend.requester.id === session?.data?.user?.id
+    );
+  };
 
   return (
     <div>
@@ -58,24 +70,28 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
             </div>
           ) : (
             <div>
-              {data?.users.map((user: UserDetail, index: number) => (
-                <div
-                  key={user.id}
-                  className={clsx(
-                    "flex items-center bg-zinc-200 hover:bg-neutral-300 justify-between gap-5 py-2 px-6 cursor-pointer",
-                    {
-                      "border-b border-b-primary":
-                        data?.users.length !== index + 1,
-                    }
-                  )}
-                >
-                  <p>{user.username}</p>
-                  <FriendRequestBtn
-                    receiverId={user.id}
-                    requesterId={session?.data?.user.id || ""}
-                  />
-                </div>
-              ))}
+              {data?.users.map((user: UserDetail, index: number) => {
+                return (
+                  <div
+                    key={user.id}
+                    className={clsx(
+                      "flex items-center bg-zinc-200 hover:bg-neutral-300 justify-between gap-5 py-2 px-6 cursor-pointer",
+                      {
+                        "border-b border-b-primary":
+                          data?.users.length !== index + 1,
+                      }
+                    )}
+                  >
+                    <p>{user.username}</p>
+                    {user.id !== session?.data?.user?.id && !isFriend(user) && (
+                      <FriendRequestBtn
+                        receiverId={user.id || ""}
+                        requesterId={session?.data?.user.id || ""}
+                      />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
