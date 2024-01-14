@@ -41,7 +41,11 @@ const Sidebar: React.FC<SidebarProps> = ({
                 ? friend.receiver
                 : friend.requester;
 
-            return <UserCard key={friendUser.id} friendUser={friendUser} />;
+            if (friendUser?.username) {
+              return <UserCard key={friendUser.id} friendUser={friendUser} />;
+            }
+
+            return null;
           })}
         </div>
       </div>
@@ -56,18 +60,25 @@ const Sidebar: React.FC<SidebarProps> = ({
           <p className="text-center text-destructive font-semibold">Empty</p>
         )}
         <div className="flex flex-col gap-3">
-          {friendReqs?.map((friend) => (
-            <div
-              key={friend.requester.id}
-              className="flex items-center justify-between border border-primary p-2 rounded"
-            >
-              <p>{friend.requester.username}</p>
-              <AcceptDecline
-                receiverId={session?.data?.user?.id || ""}
-                requesterId={friend?.requester?.id || ""}
-              />
-            </div>
-          ))}
+          {friendReqs?.length !== 0 &&
+            friendReqs
+              ?.filter((friend) => friend?.requester?.username)
+              .map((friend) => {
+                return (
+                  <div
+                    key={friend?.requester?.id}
+                    className="flex items-center justify-between border border-primary p-2 rounded"
+                  >
+                    <p>{friend?.requester?.username}</p>
+                    <AcceptDecline
+                      receiverId={session?.data?.user?.id || ""}
+                      requesterId={friend?.requester?.id || ""}
+                      requesterUsername={friend?.requester?.username || ""}
+                      requesterImage={friend?.requester?.image || ""}
+                    />
+                  </div>
+                );
+              })}
         </div>
       </div>
     </div>

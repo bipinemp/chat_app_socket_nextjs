@@ -23,6 +23,7 @@ const FriendRequestBtn: FC<FriendRequestBtnProps> = ({
       username: session?.data?.user?.username,
       message: "Sent a friend request",
       receiverId: receiverId,
+      senderId: session?.data?.user?.id,
       type: "REQ",
       read: false,
     };

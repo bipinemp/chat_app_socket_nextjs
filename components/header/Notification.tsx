@@ -15,8 +15,7 @@ import {
   MenubarShortcut,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-
-
+import Link from "next/link";
 
 const Notification = () => {
   const session = useSession();
@@ -72,14 +71,15 @@ const Notification = () => {
             <>
               {notifications.map((msg, index) => (
                 <MenubarItem key={index} className="w-full">
-                  <p
+                  <Link
+                    href={`/chats/${msg.senderId}`}
                     className={clsx("w-full py-2 px-3 cursor-pointer", {
                       "border-b border-primary":
                         notifications.length !== index + 1,
                     })}
                   >
                     <b>{msg.username} :</b> {msg.message}
-                  </p>
+                  </Link>
                 </MenubarItem>
               ))}
             </>

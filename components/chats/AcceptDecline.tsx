@@ -4,24 +4,52 @@ import { FC } from "react";
 import axios from "axios";
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
+import socket from "@/lib/socket";
+import { useSession } from "next-auth/react";
 
 interface AcceptDeclineProps {
   receiverId: string;
   requesterId: string;
+  requesterUsername: string;
+  requesterImage: string;
 }
 
-const AcceptDecline: FC<AcceptDeclineProps> = ({ receiverId, requesterId }) => {
+const AcceptDecline: FC<AcceptDeclineProps> = ({
+  receiverId,
+  requesterId,
+  requesterUsername,
+  requesterImage,
+}) => {
+  const queryClient = useQueryClient();
+  const session = useSession();
+
   async function acceptFriendRequest(requesterId: string) {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/chat/accept_reject",
-        {
-          receiverId,
-          requesterId,
-          status: "ACCEPTED",
-        }
-      );
-      console.log(response);
+      await axios.post("http://localhost:3000/api/chat/accept_reject", {
+        receiverId,
+        requesterId,
+        status: "ACCEPTED",
+      });
+
+      const friendsData = {
+        requester: {
+          id: requesterId,
+          username: requesterUsername,
+          image: requesterImage,
+        },
+        receiver: {
+          id: receiverId,
+          username: session?.data?.user?.username,
+          image: session?.data?.user?.image,
+        },
+      };
+
+      socket.emit("acceptfriendreq", friendsData);
+
+      queryClient.setQueryData(["friendreqs"], (data: any) => {
+        return data.map((val: any) => val.requester.id !== requesterId);
+      });
     } catch (error) {
       console.log(error);
     }
@@ -29,15 +57,17 @@ const AcceptDecline: FC<AcceptDeclineProps> = ({ receiverId, requesterId }) => {
 
   async function rejectFriendRequest(requesterId: string) {
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/chat/accept_reject",
-        {
-          receiverId,
-          requesterId,
-          status: "DECLINED",
-        }
-      );
-      console.log(response);
+      await axios.post("http://localhost:3000/api/chat/accept_reject", {
+        receiverId,
+        requesterId,
+        status: "DECLINED",
+      });
+
+      queryClient.setQueryData(["friendreqs"], (data: any) => {
+        return data.map((val: any) => val.requester.id !== requesterId);
+      });
+
+      socket.emit("deletefriendreq", requesterId);
     } catch (error) {
       console.log(error);
     }

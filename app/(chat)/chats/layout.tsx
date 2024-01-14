@@ -3,13 +3,17 @@
 import getFriendReqs from "@/app/actions/getFriendReqs";
 import getFriends from "@/app/actions/getFriends";
 import Sidebar from "@/components/chats/Sidebar";
-import { useQuery } from "@tanstack/react-query";
+import socket from "@/lib/socket";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export default function ChatsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const queryClient = useQueryClient();
+
   const { data: friends, isPending: FriendsPending } =
     useQuery<TAcceptedFriedsArr>({
       queryKey: ["friends"],
@@ -20,6 +24,33 @@ export default function ChatsLayout({
     queryKey: ["friendreqs"],
     queryFn: getFriendReqs,
   });
+
+  useEffect(() => {
+    const handleFriendReqNotification = (notification: NotificationType) => {
+      if (notification.type === "REQ") {
+        queryClient.setQueryData(["friendreqs"], (data: any) => {
+          return [notification, ...(data || [])];
+        });
+      }
+    };
+
+    const handleUpdatedFriendList = (friend: any) => {
+      queryClient.setQueryData(["friends"], (data: any) => {
+        const newFriend = friends && friends?.length > 0 ? friend[0] : friend;
+
+        return [newFriend[0], ...(data || [])];
+      });
+    };
+
+    socket.on("friendreq_notification", handleFriendReqNotification);
+    socket.on("updatedFriendsList", handleUpdatedFriendList);
+
+    return () => {
+      // Clean up the event listener when the component is unmounted
+      socket.off("friendreq_notification", handleFriendReqNotification);
+      socket.off("updatedFriendsList", handleUpdatedFriendList);
+    };
+  }, [socket]);
 
   return (
     <div className="flex">

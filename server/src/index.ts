@@ -14,28 +14,47 @@ interface ChatMessage {
 
 interface UserData {
   id?: string;
-  username: string;
+  username?: string;
   password?: string | null;
   email?: string;
   emailVerified: string | null;
   image?: string | null;
 }
 
-interface FriendRequest {
-  requester: UserData;
+interface UserDataa {
+  id?: string;
+  username?: string;
+  password?: string;
+  email?: string;
+  emailVerified?: string;
+  image?: string;
 }
 
-type FriendReqs = FriendRequest[];
+interface FriendRequest {
+  requester: UserDataa;
+}
 
-interface NotificationType {
-  message: string;
-  username: string;
+type FriendReqss = FriendRequest[];
+
+type NotificationType = {
+  message?: string;
+  username?: string;
   image?: string;
   senderId?: string;
-  receiverId: string;
-}
+  receiverId?: string;
+  type?: string;
+  read?: boolean;
+};
 
-let FriendReqs: FriendReqs = [];
+type TAcceptedFriends = {
+  requester?: UserDataa;
+  receiver?: UserDataa;
+};
+
+type TAcceptedFriedsArr = TAcceptedFriends[] | any[];
+
+let friendReqs: FriendReqss = [];
+let friends: TAcceptedFriedsArr = [];
 
 const app = express();
 
@@ -56,6 +75,7 @@ app.get("/", (req, res) => res.send("Hello from server"));
 
 io.on("connection", (socket: Socket) => {
   console.log("A user connected");
+  console.log(friends);
 
   socket.on(
     "joinRoom",
@@ -85,7 +105,54 @@ io.on("connection", (socket: Socket) => {
   });
 
   socket.on("chat_notification", (message: NotificationType) => {
-    io.to(message.receiverId).emit("chat_notification", message);
+    if (message.type === "REQ") {
+      const alreadyExists = friendReqs.find(
+        (user) => user.requester.id === message.senderId
+      );
+
+      if (!alreadyExists) {
+        friendReqs = [
+          ...friendReqs,
+          {
+            requester: {
+              id: message.senderId,
+              username: message.username,
+              email: "",
+              image: message.image,
+            },
+          },
+        ];
+        io.to(message.receiverId || "").emit(
+          "friendreq_notification",
+          friendReqs
+        );
+      }
+    }
+    io.to(message.receiverId || "").emit("chat_notification", message);
+  });
+
+  socket.on("deletefriendreq", (requesterId: string) => {
+    friendReqs.filter((friend) => friend.requester.id !== requesterId);
+  });
+
+  socket.on("acceptfriendreq", (data: TAcceptedFriends) => {
+    friends = [
+      {
+        requester: {
+          id: data.requester?.id,
+          username: data.requester?.username,
+          image: data.requester?.image,
+        },
+        receiver: {
+          id: data.receiver?.id,
+          username: data.receiver?.username,
+          image: data.receiver?.image,
+        },
+      },
+      ...friends,
+    ];
+
+    io.emit("updatedFriendsList", friends);
   });
 });
 

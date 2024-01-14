@@ -38,10 +38,19 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    if (friendRequestExists) {
+    const wasFriendReqDeclined2 = await db.friend.findFirst({
+      where: {
+        // Check if user2 sent a request to user1
+        requesterId: receiverId,
+        receiverId: requesterId,
+        status: "DECLINED",
+      },
+    });
+
+    if (friendRequestExists && wasFriendReqDeclined2) {
       return NextResponse.json(
         {
-          message: "Friend Request already Sent or Received",
+          message: "Friend Request already Sent or Received or Declined",
         },
         { status: 400 }
       );
@@ -56,10 +65,20 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    if (reciprocalFriendRequestExists) {
+    // check if the previous friend request was declined or not
+    const wasFriendReqDeclined1 = await db.friend.findFirst({
+      where: {
+        // Check if user2 sent a request to user1
+        requesterId: receiverId,
+        receiverId: requesterId,
+        status: "DECLINED",
+      },
+    });
+
+    if (reciprocalFriendRequestExists && wasFriendReqDeclined1) {
       return NextResponse.json(
         {
-          message: "Friend Request already Sent or Received",
+          message: "Friend Request already Sent or Received or Declined",
         },
         { status: 400 }
       );
