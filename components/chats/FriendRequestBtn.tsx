@@ -42,8 +42,13 @@ const FriendRequestBtn: FC<FriendRequestBtnProps> = ({
 
   return (
     <div>
-      <Button type="button" onClick={sendFriendReqest}>
-        <UserPlus className="w-5 h-5" />
+      <Button
+        type="button"
+        onClick={sendFriendReqest}
+        size="icon"
+        className="h-7 w-8"
+      >
+        <UserPlus className="w-4 h-4" />
       </Button>
     </div>
   );

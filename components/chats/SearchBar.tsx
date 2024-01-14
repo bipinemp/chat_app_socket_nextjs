@@ -9,6 +9,17 @@ import useDebounce from "@/hooks/useDebounce";
 import FriendRequestBtn from "./FriendRequestBtn";
 import { useSession } from "next-auth/react";
 import clsx from "clsx";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command";
 
 interface SearchBarProps {}
 
@@ -26,11 +37,10 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
           .get(`http://localhost:3000/api/chat/search?q=${debouncedSearchTerm}`)
           .then((res) => res.data);
       }
+      return [];
     },
     enabled: debouncedSearchTerm !== "",
   });
-
-  console.log(data);
 
   const isFriend = (user: any) => {
     const friends = [
@@ -47,57 +57,76 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
   return (
     <div>
       <h2 className="underline">Search</h2>
-      <form className="relative flex flex-col">
-        <span className="absolute top-3 left-2">
-          <Search className="w-6 h-6" />
-        </span>
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Username or Email..."
-          className="border-primary py-6 pl-10 focus-visible:ring-0 rounded-none"
-        />
-        <div
-          className={clsx("mt-1 absolute w-full top-11 z-20", {
-            "border border-primary": data?.users,
-          })}
-        >
-          {status === "error" ? (
-            <p className="text-center">Not Found :(</p>
-          ) : status === "pending" && search !== "" ? (
-            <div className="flex items-center justify-center">
-              <Loader2 className="w-5 h-5 animate-spin" />
-            </div>
-          ) : (
-            <div>
-              {data?.users.map((user: UserDetail, index: number) => {
-                return (
-                  <div
-                    key={user.id}
-                    className={clsx(
-                      "flex items-center bg-zinc-200 hover:bg-neutral-300 justify-between gap-5 py-2 px-6 cursor-pointer",
-                      {
-                        "border-b border-b-primary":
-                          data?.users.length !== index + 1,
-                      }
-                    )}
-                  >
-                    <p>{user.username}</p>
-                    {user.id !== session?.data?.user?.id && !isFriend(user) && (
-                      <FriendRequestBtn
-                        receiverId={user.id || ""}
-                        requesterId={session?.data?.user.id || ""}
-                      />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </form>
+      <Command className="border border-primary">
+        <form className="relative flex flex-col">
+          <CommandInput
+            value={search}
+            onValueChange={(e) => setSearch(e)}
+            placeholder="Username or Email..."
+          />
+          <CommandList>
+            <CommandGroup>
+              {status === "error" ? (
+                <CommandEmpty>No results found.</CommandEmpty>
+              ) : status === "pending" && search !== "" ? (
+                <CommandItem>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                </CommandItem>
+              ) : (
+                <>
+                  {data?.users.map((user: UserDetail, index: number) => {
+                    return (
+                      <CommandItem
+                        key={user.id}
+                        value={user.username}
+                        className="flex items-center justify-between"
+                      >
+                        <p>{user.username}</p>
+                        {user.id !== session?.data?.user?.id &&
+                          !isFriend(user) && (
+                            <FriendRequestBtn
+                              receiverId={user.id || ""}
+                              requesterId={session?.data?.user.id || ""}
+                            />
+                          )}
+                      </CommandItem>
+                    );
+                  })}
+                </>
+              )}
+            </CommandGroup>
+          </CommandList>
+        </form>
+      </Command>
     </div>
   );
 };
 
 export default SearchBar;
+
+// className={clsx(
+//   "flex items-center bg-zinc-200 hover:bg-neutral-300 justify-between gap-5 py-2 px-6 cursor-pointer",
+//   {
+//     "border-b border-b-primary":
+//       data?.users.length !== index + 1,
+//   }
+// )}
+{
+  /* <div
+            className={clsx("mt-1 absolute w-full top-11 z-20", {
+              "border border-primary": data?.users,
+            })}
+          >
+            {status === "error" ? (
+              <p className="text-center">Not Found :(</p>
+            ) : status === "pending" && search !== "" ? (
+              <div className="flex items-center justify-center">
+                <Loader2 className="w-5 h-5 animate-spin" />
+              </div>
+            ) : (
+              <div>
+                
+              </div>
+            )}
+          </div> */
+}

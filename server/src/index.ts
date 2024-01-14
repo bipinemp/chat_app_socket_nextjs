@@ -75,7 +75,6 @@ app.get("/", (req, res) => res.send("Hello from server"));
 
 io.on("connection", (socket: Socket) => {
   console.log("A user connected");
-  console.log(friends);
 
   socket.on(
     "joinRoom",
