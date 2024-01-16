@@ -103,30 +103,3 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
 };
 
 export default SearchBar;
-
-// className={clsx(
-//   "flex items-center bg-zinc-200 hover:bg-neutral-300 justify-between gap-5 py-2 px-6 cursor-pointer",
-//   {
-//     "border-b border-b-primary":
-//       data?.users.length !== index + 1,
-//   }
-// )}
-{
-  /* <div
-            className={clsx("mt-1 absolute w-full top-11 z-20", {
-              "border border-primary": data?.users,
-            })}
-          >
-            {status === "error" ? (
-              <p className="text-center">Not Found :(</p>
-            ) : status === "pending" && search !== "" ? (
-              <div className="flex items-center justify-center">
-                <Loader2 className="w-5 h-5 animate-spin" />
-              </div>
-            ) : (
-              <div>
-                
-              </div>
-            )}
-          </div> */
-}
