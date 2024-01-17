@@ -50,14 +50,6 @@ const ReqSentReceiveList: FC<ReqSentReceiveListProps> = ({
           {friendReqs?.sentFriendRequests.map((req) => (
             <div key={req.id} className="flex items-center justify-between">
               <h3>{req.receiver?.username}</h3>
-              {/* <div className="flex items-center gap-4">
-                <Button>
-                  <Check className="w-5 h-5" />
-                </Button>
-                <Button variant="destructive">
-                  <X className="w-5 h-5" />
-                </Button>
-              </div> */}
             </div>
           ))}
         </div>
