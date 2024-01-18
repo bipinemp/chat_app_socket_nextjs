@@ -1,29 +1,22 @@
 "use client";
 
-import { FC, useState } from "react";
-import { Input } from "../ui/input";
-import { Loader2, Search } from "lucide-react";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import useDebounce from "@/hooks/useDebounce";
 import FriendRequestBtn from "./FriendRequestBtn";
 import { useSession } from "next-auth/react";
-import clsx from "clsx";
 import {
   Command,
-  CommandDialog,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
-  CommandShortcut,
 } from "@/components/ui/command";
 
-interface SearchBarProps {}
-
-const SearchBar: FC<SearchBarProps> = ({}) => {
+const SearchBar = () => {
   const [search, setSearch] = useState("");
   const session = useSession();
 
