@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { RegisterSchema } from "@/types/authTypes";
-import { hash } from "bcrypt";
+import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     }
 
     // encrypting password using bcrypt
-    const hashedPassword = await hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await db.user.create({
       data: {
