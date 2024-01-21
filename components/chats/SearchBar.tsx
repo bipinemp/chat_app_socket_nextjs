@@ -50,7 +50,7 @@ const SearchBar = () => {
   };
 
   return (
-    <div>
+    <div className="w-[700px]">
       <h2 className="underline">Search</h2>
       <Command className="border border-primary">
         <form className="relative flex flex-col">
