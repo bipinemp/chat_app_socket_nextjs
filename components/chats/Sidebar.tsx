@@ -20,12 +20,12 @@ const Sidebar: React.FC<SidebarProps> = ({ session }) => {
 
   const { data: friends, isPending: FriendsPending } =
     useQuery<TAcceptedFriedsArr>({
-      queryKey: ["friends", session?.user?.id],
+      queryKey: ["friends"],
       queryFn: getFriends,
     });
 
   const { data: friendReqs, isPending: FrnReqsPending } = useQuery<FriendReqs>({
-    queryKey: ["friendreqs", session?.user?.id],
+    queryKey: ["friendreqs"],
     queryFn: getFriendReqs,
   });
 
