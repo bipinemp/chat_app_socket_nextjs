@@ -41,7 +41,7 @@ const Page = ({ params }: { params: { id: string } }) => {
     const fetchInitialMessages = async () => {
       try {
         const response = await axios.get(
-          `${process.env.BASE_URL}/api/chat/getmessages?t=${params.id}`
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/chat/getmessages?t=${params.id}`
         );
 
         setChatMessages(response.data.messages);
