@@ -29,7 +29,7 @@ export default function ChatsLayout({
 
   useEffect(() => {
     const handleFriendReqNotification = (notification: NotificationType) => {
-      if (notification.type === "REQ") {
+      if (notification.message && notification.type === "REQ") {
         queryClient.setQueryData(["friendreqs"], (data: any) => {
           const newData = [notification, ...(data || [])];
           queryClient.invalidateQueries({ queryKey: ["friendreqs"] });
@@ -39,11 +39,13 @@ export default function ChatsLayout({
     };
 
     const handleUpdatedFriendList = (friend: any) => {
-      queryClient.setQueryData(["friends"], (data: any) => {
-        const newFriend = friends && friends?.length > 0 ? friend[0] : friend;
+      if (friend) {
+        queryClient.setQueryData(["friends"], (data: any) => {
+          const newFriend = friends && friends?.length > 0 ? friend[0] : friend;
 
-        return [newFriend[0], ...(data || [])];
-      });
+          return [newFriend[0], ...(data || [])];
+        });
+      }
     };
 
     socket.on("friendreq_notification", handleFriendReqNotification);
