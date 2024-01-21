@@ -44,6 +44,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                 ? friend.receiver
                 : friend.requester;
 
+            if (!session?.data?.user?.id) {
+              return <Loader2 className="w-4 h-5" />;
+            }
+
             if (friendUser?.username) {
               return <UserCard key={friendUser.id} friendUser={friendUser} />;
             }
