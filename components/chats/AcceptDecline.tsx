@@ -55,6 +55,8 @@ const AcceptDecline: FC<AcceptDeclineProps> = ({
       });
     } catch (error) {
       console.log(error);
+    } finally {
+      queryClient.invalidateQueries({ queryKey: ["friendreqs"] });
     }
   }
 
@@ -76,6 +78,8 @@ const AcceptDecline: FC<AcceptDeclineProps> = ({
       socket.emit("deletefriendreq", requesterId);
     } catch (error) {
       console.log(error);
+    } finally {
+      queryClient.invalidateQueries({ queryKey: ["friendreqs"] });
     }
   }
 
