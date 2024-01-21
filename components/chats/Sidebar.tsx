@@ -67,7 +67,6 @@ const Sidebar: React.FC<SidebarProps> = ({ session }) => {
       </div>
       <div className="z-10 flex flex-col gap-4">
         <h2 className="underline">Your Chats</h2>
-        <p>UserLoggedIn: {session?.user?.username}</p>
         <div className="w-full flex flex-col gap-3">
           {FriendsPending && (
             <div className="flex justify-center">
