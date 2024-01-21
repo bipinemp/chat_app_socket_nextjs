@@ -27,7 +27,9 @@ const SearchBar = () => {
     queryFn: () => {
       if (debouncedSearchTerm) {
         return axios
-          .get(`http://localhost:3000/api/chat/search?q=${debouncedSearchTerm}`)
+          .get(
+            `${process.env.NEXT_PUBLIC_BASE_URL}/api/chat/search?q=${debouncedSearchTerm}`
+          )
           .then((res) => res.data);
       }
       return [];
