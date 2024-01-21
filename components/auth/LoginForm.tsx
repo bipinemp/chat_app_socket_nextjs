@@ -109,7 +109,7 @@ const LoginForm: FC<LoginFormProps> = ({}) => {
         </Button>
       </form>
       <div className="flex items-center gap-2 justify-center">
-        Don't have an account?{" "}
+        Don&apos;t have an account?{" "}
         <Link href={"/register"} className="underline">
           Register
         </Link>
