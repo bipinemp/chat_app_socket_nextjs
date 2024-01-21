@@ -41,10 +41,11 @@ const LoginForm: FC<LoginFormProps> = ({}) => {
       if (signInData?.error === "CredentialsSignin") {
         toast.error("Email or Password didn't match");
       }
+      router.refresh();
+      revalidatePath("/");
       if (signInData?.status === 200) {
         router.refresh();
         router.push("/");
-        revalidatePath("/");
       }
     } catch (error: any) {
       if (error instanceof AxiosError) {
