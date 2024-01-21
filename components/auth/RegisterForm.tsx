@@ -28,7 +28,7 @@ const RegisterForm = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `${process.env.BASE_URL}/api/user/register`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/user/register`,
         data
       );
       if (response.status === 201) {

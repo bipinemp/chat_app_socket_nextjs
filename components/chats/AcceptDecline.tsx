@@ -26,11 +26,14 @@ const AcceptDecline: FC<AcceptDeclineProps> = ({
 
   async function acceptFriendRequest(requesterId: string) {
     try {
-      await axios.post(`${process.env.BASE_URL}/api/chat/accept_reject`, {
-        receiverId,
-        requesterId,
-        status: "ACCEPTED",
-      });
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/chat/accept_reject`,
+        {
+          receiverId,
+          requesterId,
+          status: "ACCEPTED",
+        }
+      );
 
       const friendsData = {
         requester: {
@@ -57,11 +60,14 @@ const AcceptDecline: FC<AcceptDeclineProps> = ({
 
   async function rejectFriendRequest(requesterId: string) {
     try {
-      await axios.post(`${process.env.BASE_URL}/api/chat/accept_reject`, {
-        receiverId,
-        requesterId,
-        status: "DECLINED",
-      });
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/chat/accept_reject`,
+        {
+          receiverId,
+          requesterId,
+          status: "DECLINED",
+        }
+      );
 
       queryClient.setQueryData(["friendreqs"], (data: any) => {
         return data.map((val: any) => val.requester.id !== requesterId);

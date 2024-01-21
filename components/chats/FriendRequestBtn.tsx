@@ -31,10 +31,13 @@ const FriendRequestBtn: FC<FriendRequestBtnProps> = ({
     socket.emit("chat_notification", Notification);
 
     try {
-      await axios.post(`${process.env.BASE_URL}/api/chat/friendrequest`, {
-        receiverId,
-        requesterId,
-      });
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/chat/friendrequest`,
+        {
+          receiverId,
+          requesterId,
+        }
+      );
     } catch (error) {
       console.log(error);
     }

@@ -78,7 +78,7 @@ const Page = ({ params }: { params: { id: string } }) => {
 
   async function sendMessage() {
     try {
-      await axios.post(`${process.env.BASE_URL}/api/chat/sendmsg`, {
+      await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/chat/sendmsg`, {
         receiverId: params.id,
         senderId: session?.data?.user?.id,
         message,
