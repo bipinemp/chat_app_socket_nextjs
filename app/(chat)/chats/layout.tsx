@@ -1,5 +1,3 @@
-"use client";
-
 import Sidebar from "@/components/chats/Sidebar";
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
