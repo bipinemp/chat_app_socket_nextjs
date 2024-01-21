@@ -5,6 +5,7 @@ import getFriends from "@/app/actions/getFriends";
 import Sidebar from "@/components/chats/Sidebar";
 import socket from "@/lib/socket";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 
 export default function ChatsLayout({
@@ -13,15 +14,16 @@ export default function ChatsLayout({
   children: React.ReactNode;
 }) {
   const queryClient = useQueryClient();
+  const session = useSession();
 
   const { data: friends, isPending: FriendsPending } =
     useQuery<TAcceptedFriedsArr>({
-      queryKey: ["friends"],
+      queryKey: ["friends", session?.data?.user?.id],
       queryFn: getFriends,
     });
 
   const { data: friendReqs, isPending: FrnReqsPending } = useQuery<FriendReqs>({
-    queryKey: ["friendreqs"],
+    queryKey: ["friendreqs", session?.data?.user?.id],
     queryFn: getFriendReqs,
   });
 
