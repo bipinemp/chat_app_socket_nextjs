@@ -77,7 +77,7 @@ const SearchBar = () => {
                         className="flex items-center justify-between"
                       >
                         {!session?.data?.user?.id && (
-                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <Loader2 className="w-5 h-5 animate-spin text-center" />
                         )}
                         {session?.data?.user?.id && (
                           <>
