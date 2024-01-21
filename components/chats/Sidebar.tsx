@@ -41,7 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({ session }) => {
     };
 
     const handleUpdatedFriendList = (friend: any) => {
-      if (friend) {
+      if (friend.requester.id && friend.receiver.id) {
         queryClient.setQueryData(["friends"], (data: any) => {
           const newFriend = friends && friends?.length > 0 ? friend[0] : friend;
 
