@@ -2,7 +2,7 @@
 
 import { useWhichUserChatOpened } from "@/store/store";
 import { useSession } from "next-auth/react";
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import socket from "@/lib/socket";
 import { Bell } from "lucide-react";
 import clsx from "clsx";
@@ -11,8 +11,6 @@ import {
   MenubarContent,
   MenubarItem,
   MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import Link from "next/link";

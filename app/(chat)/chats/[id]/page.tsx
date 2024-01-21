@@ -10,7 +10,6 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { Send } from "lucide-react";
 import { useWhichUserChatOpened } from "@/store/store";
-import { usePathname } from "next/navigation";
 import socket from "@/lib/socket";
 
 interface ChatMessage {
@@ -42,7 +41,7 @@ const Page = ({ params }: { params: { id: string } }) => {
     const fetchInitialMessages = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:3000/api/chat/getmessages?t=${params.id}`
+          `${process.env.BASE_URL}/api/chat/getmessages?t=${params.id}`
         );
 
         setChatMessages(response.data.messages);
@@ -79,7 +78,7 @@ const Page = ({ params }: { params: { id: string } }) => {
 
   async function sendMessage() {
     try {
-      await axios.post("http://localhost:3000/api/chat/sendmsg", {
+      await axios.post(`${process.env.BASE_URL}/api/chat/sendmsg`, {
         receiverId: params.id,
         senderId: session?.data?.user?.id,
         message,

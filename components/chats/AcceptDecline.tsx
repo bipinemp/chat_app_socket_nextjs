@@ -26,7 +26,7 @@ const AcceptDecline: FC<AcceptDeclineProps> = ({
 
   async function acceptFriendRequest(requesterId: string) {
     try {
-      await axios.post("http://localhost:3000/api/chat/accept_reject", {
+      await axios.post(`${process.env.BASE_URL}/api/chat/accept_reject`, {
         receiverId,
         requesterId,
         status: "ACCEPTED",
@@ -57,7 +57,7 @@ const AcceptDecline: FC<AcceptDeclineProps> = ({
 
   async function rejectFriendRequest(requesterId: string) {
     try {
-      await axios.post("http://localhost:3000/api/chat/accept_reject", {
+      await axios.post(`${process.env.BASE_URL}/api/chat/accept_reject`, {
         receiverId,
         requesterId,
         status: "DECLINED",

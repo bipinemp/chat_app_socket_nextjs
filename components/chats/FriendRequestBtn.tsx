@@ -31,7 +31,7 @@ const FriendRequestBtn: FC<FriendRequestBtnProps> = ({
     socket.emit("chat_notification", Notification);
 
     try {
-      await axios.post("http://localhost:3000/api/chat/friendrequest", {
+      await axios.post(`${process.env.BASE_URL}/api/chat/friendrequest`, {
         receiverId,
         requesterId,
       });
