@@ -10,6 +10,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import getFriendReqs from "@/app/actions/getFriendReqs";
 import getFriends from "@/app/actions/getFriends";
+import Image from "next/image";
 
 interface SidebarProps {
   session: any;
@@ -30,24 +31,19 @@ const Sidebar: React.FC<SidebarProps> = ({ session }) => {
   });
 
   useEffect(() => {
-    const handleFriendReqNotification = (notification: NotificationType) => {
-      if (notification.message && notification.type === "REQ") {
-        queryClient.setQueryData(["friendreqs"], (data: any) => {
-          const newData = [notification, ...(data || [])];
-          queryClient.invalidateQueries({ queryKey: ["friendreqs"] });
-          return newData;
-        });
-      }
+    socket.emit("join_notification", session?.user?.id);
+
+    const handleFriendReqNotification = (notification: any) => {
+      queryClient.setQueryData(["friendreqs"], (data: any) => {
+        return [notification[0], ...data];
+      });
     };
 
     const handleUpdatedFriendList = (friend: any) => {
-      if (friend.requester.id && friend.receiver.id) {
-        queryClient.setQueryData(["friends"], (data: any) => {
-          const newFriend = friends && friends?.length > 0 ? friend[0] : friend;
-
-          return [newFriend[0], ...(data || [])];
-        });
-      }
+      queryClient.setQueryData(["friends"], (data: any) => {
+        const newFriend = friends && friends?.length > 0 ? friend[0] : friend;
+        return [newFriend[0], ...(data || [])];
+      });
     };
 
     socket.on("friendreq_notification", handleFriendReqNotification);
@@ -58,12 +54,12 @@ const Sidebar: React.FC<SidebarProps> = ({ session }) => {
       socket.off("friendreq_notification", handleFriendReqNotification);
       socket.off("updatedFriendsList", handleUpdatedFriendList);
     };
-  }, [socket]);
+  }, [socket, session?.user?.id]);
 
   return (
     <div className="relative flex flex-col gap-5 bg-zinc-100 border border-r-primary py-7 px-5 w-[350px] h-[88vh]">
       <div>
-        <SearchBar />
+        <SearchBar session={session} />
       </div>
       <div className="z-10 flex flex-col gap-4">
         <h2 className="underline">Your Chats</h2>
@@ -110,7 +106,25 @@ const Sidebar: React.FC<SidebarProps> = ({ session }) => {
                     key={friend?.requester?.id}
                     className="flex items-center justify-between border border-primary p-2 rounded"
                   >
-                    <p>{friend?.requester?.username}</p>
+                    <div className="flex gap-3 items-center">
+                      {friend?.requester?.image === "" ||
+                      friend?.requester?.image === null ? (
+                        <div className="w-[45px] h-[45px] relative bg-destructive rounded-full flex items-center justify-center">
+                          <span className="absolute text-secondary font-bold text-lg">
+                            {friend?.requester?.username?.charAt(0)}
+                          </span>
+                        </div>
+                      ) : (
+                        <Image
+                          src={friend?.requester?.image || ""}
+                          width={45}
+                          height={45}
+                          alt="profile_image"
+                          className="rounded-full"
+                        />
+                      )}
+                      <p>{friend?.requester?.username}</p>
+                    </div>
                     <AcceptDecline
                       receiverId={session?.user?.id || ""}
                       requesterId={friend?.requester?.id || ""}

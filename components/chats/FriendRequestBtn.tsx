@@ -5,25 +5,27 @@ import { Button } from "../ui/button";
 import { UserPlus } from "lucide-react";
 import axios from "axios";
 import socket from "@/lib/socket";
-import { useSession } from "next-auth/react";
 
 interface FriendRequestBtnProps {
   requesterId: string;
   receiverId: string;
+  senderName: string;
+  senderImage: string;
 }
 
 const FriendRequestBtn: FC<FriendRequestBtnProps> = ({
   requesterId,
   receiverId,
+  senderName,
+  senderImage,
 }) => {
-  const session = useSession();
-
   const sendFriendReqest = async () => {
     const Notification = {
-      username: session?.data?.user?.username,
+      username: senderName,
       message: "Sent a friend request",
       receiverId: receiverId,
-      senderId: session?.data?.user?.id,
+      senderId: requesterId,
+      image: senderImage,
       type: "REQ",
       read: false,
     };

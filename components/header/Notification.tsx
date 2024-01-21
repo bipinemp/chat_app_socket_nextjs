@@ -42,7 +42,7 @@ const Notification: React.FC<NotifyProps> = ({ id }) => {
       // Clean up the event listener when the component is unmounted
       socket.off("chat_notification", handleChatNotification);
     };
-  }, [userId, id]);
+  }, [userId, id, socket]);
 
   const [unReadNotificationCount, setUnReadNotificationCount] = useState(0);
   useEffect(() => {

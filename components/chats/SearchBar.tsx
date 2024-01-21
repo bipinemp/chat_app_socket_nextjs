@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import useDebounce from "@/hooks/useDebounce";
 import FriendRequestBtn from "./FriendRequestBtn";
-import { useSession } from "next-auth/react";
 import {
   Command,
   CommandEmpty,
@@ -16,9 +15,12 @@ import {
   CommandList,
 } from "@/components/ui/command";
 
-const SearchBar = () => {
+interface Props {
+  session: any;
+}
+
+const SearchBar: React.FC<Props> = ({ session }) => {
   const [search, setSearch] = useState("");
-  const session = useSession();
 
   const debouncedSearchTerm = useDebounce(search, 200);
 
@@ -44,8 +46,8 @@ const SearchBar = () => {
     ];
     return friends.some(
       (friend) =>
-        friend?.receiver?.id === session?.data?.user?.id ||
-        friend?.requester?.id === session?.data?.user?.id
+        friend?.receiver?.id === session?.user?.id ||
+        friend?.requester?.id === session?.user?.id
     );
   };
 
@@ -76,17 +78,19 @@ const SearchBar = () => {
                         value={user.username}
                         className="flex items-center justify-between"
                       >
-                        {!session?.data?.user?.id && (
+                        {!session?.user?.id && (
                           <Loader2 className="w-5 h-5 animate-spin text-center" />
                         )}
-                        {session?.data?.user?.id && (
+                        {session?.user?.id && (
                           <>
                             <p>{user.username}</p>
-                            {user.id !== session?.data?.user?.id &&
+                            {user.id !== session?.user?.id &&
                               !isFriend(user) && (
                                 <FriendRequestBtn
-                                  receiverId={user.id!}
-                                  requesterId={session?.data?.user?.id!}
+                                  receiverId={user?.id || ""}
+                                  senderName={session?.user?.username}
+                                  requesterId={session?.user?.id || ""}
+                                  senderImage={session?.user?.image || ""}
                                 />
                               )}
                           </>
