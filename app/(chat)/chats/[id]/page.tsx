@@ -133,9 +133,11 @@ const Page = ({ params }: { params: { id: string } }) => {
       <div className="border-b border-b-primary pb-6 px-5">
         <h2>UserDetail</h2>
       </div>
-      <div className="w-full h-full pl-10 flex items-center justify-center">
-        <Loader2 className="w-16 h-16 animate-spin" />
-      </div>
+      {loading && (
+        <div className="w-full h-full pl-10 flex items-center justify-center">
+          <Loader2 className="w-16 h-16 animate-spin" />
+        </div>
+      )}
 
       <div className="flex flex-col gap-5 h-[400px] overflow-scroll overflow-x-hidden px-5 py-4">
         {chatMessages.length !== 0 &&
