@@ -49,10 +49,6 @@ const AcceptDecline: FC<AcceptDeclineProps> = ({
       };
 
       socket.emit("acceptfriendreq", friendsData);
-
-      queryClient.setQueryData(["friendreqs"], (data: any) => {
-        return data.map((val: any) => val.requester.id !== requesterId);
-      });
     } catch (error) {
       console.log(error);
     } finally {
