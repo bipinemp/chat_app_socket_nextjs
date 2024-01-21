@@ -56,7 +56,7 @@ export default function ChatsLayout({
       socket.off("friendreq_notification", handleFriendReqNotification);
       socket.off("updatedFriendsList", handleUpdatedFriendList);
     };
-  }, []);
+  }, [socket]);
 
   return (
     <div className="flex">
