@@ -38,22 +38,28 @@ const Sidebar: React.FC<SidebarProps> = ({
           {friends?.length === 0 && (
             <p className="text-center text-destructive font-semibold">Empty</p>
           )}
-          {friends?.map((friend) => {
-            const friendUser: UserDetail =
-              friend.requester?.id === session?.data?.user?.id
-                ? friend.receiver
-                : friend.requester;
+          {session?.data?.user?.id ? (
+            <>
+              {friends?.map((friend) => {
+                const friendUser: UserDetail =
+                  friend.requester?.id === session?.data?.user?.id
+                    ? friend.receiver
+                    : friend.requester;
 
-            if (!session?.data?.user?.id) {
-              return <Loader2 className="w-4 h-5" />;
-            }
+                if (friendUser?.username) {
+                  return (
+                    <UserCard key={friendUser.id} friendUser={friendUser} />
+                  );
+                }
 
-            if (friendUser?.username) {
-              return <UserCard key={friendUser.id} friendUser={friendUser} />;
-            }
-
-            return null;
-          })}
+                return null;
+              })}
+            </>
+          ) : (
+            <div className="w-full justify-center items-center h-full">
+              <Loader2 className="w-5 h-5" />
+            </div>
+          )}
         </div>
       </div>
       <div className="w-full flex flex-col gap-4">
