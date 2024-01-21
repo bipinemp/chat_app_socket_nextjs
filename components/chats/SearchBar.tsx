@@ -76,16 +76,18 @@ const SearchBar = () => {
                         value={user.username}
                         className="flex items-center justify-between"
                       >
-                        <p>{user.username}</p>
-                        <p>ReceiverID: {user.id}</p>
-                        <p>Sender/RequesterId: {session?.data?.user?.id}</p>
-                        {user.id !== session?.data?.user?.id &&
-                          !isFriend(user) && (
-                            <FriendRequestBtn
-                              receiverId={user.id!}
-                              requesterId={session?.data?.user?.id!}
-                            />
-                          )}
+                        {session?.data?.user?.id && (
+                          <>
+                            <p>{user.username}</p>
+                            {user.id !== session?.data?.user?.id &&
+                              !isFriend(user) && (
+                                <FriendRequestBtn
+                                  receiverId={user.id!}
+                                  requesterId={session?.data?.user?.id!}
+                                />
+                              )}
+                          </>
+                        )}
                       </CommandItem>
                     );
                   })}
