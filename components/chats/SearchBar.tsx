@@ -69,7 +69,7 @@ const SearchBar = () => {
                 </CommandItem>
               ) : (
                 <>
-                  {data?.users.map((user: UserDetail, index: number) => {
+                  {data?.users?.map((user: UserDetail, index: number) => {
                     return (
                       <CommandItem
                         key={user.id}
@@ -82,8 +82,8 @@ const SearchBar = () => {
                         {user.id !== session?.data?.user?.id &&
                           !isFriend(user) && (
                             <FriendRequestBtn
-                              receiverId={user.id || ""}
-                              requesterId={session?.data?.user?.id || ""}
+                              receiverId={user.id!}
+                              requesterId={session?.data?.user?.id!}
                             />
                           )}
                       </CommandItem>
