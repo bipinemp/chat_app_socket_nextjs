@@ -21,7 +21,7 @@ const Navbar = async () => {
           <li>
             {session?.user?.email ? (
               <div className="flex items-center gap-4">
-                <Notification />
+                <Notification id={session?.user?.id} />
                 <p>{session?.user?.username}</p>
                 <Link href={"/chats"}>Chats</Link>
                 <LogOut />

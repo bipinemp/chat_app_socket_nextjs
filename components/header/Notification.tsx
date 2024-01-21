@@ -1,7 +1,6 @@
 "use client";
 
 import { useWhichUserChatOpened } from "@/store/store";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import socket from "@/lib/socket";
 import { Bell } from "lucide-react";
@@ -15,13 +14,16 @@ import {
 } from "@/components/ui/menubar";
 import Link from "next/link";
 
-const Notification = () => {
-  const session = useSession();
+type NotifyProps = {
+  id: string;
+};
+
+const Notification: React.FC<NotifyProps> = ({ id }) => {
   const { notifications, setNotifications, userId, markAllAsread } =
     useWhichUserChatOpened();
 
   useEffect(() => {
-    socket.emit("join_notification", session?.data?.user?.id);
+    socket.emit("join_notification", id);
 
     const handleChatNotification = (notification: NotificationType) => {
       if (notification.type === "CHAT") {
@@ -40,7 +42,7 @@ const Notification = () => {
       // Clean up the event listener when the component is unmounted
       socket.off("chat_notification", handleChatNotification);
     };
-  }, [userId, session?.data?.user?.id]);
+  }, [userId, id]);
 
   const [unReadNotificationCount, setUnReadNotificationCount] = useState(0);
   useEffect(() => {
