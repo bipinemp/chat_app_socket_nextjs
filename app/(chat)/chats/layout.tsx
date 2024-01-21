@@ -29,7 +29,9 @@ export default function ChatsLayout({
     const handleFriendReqNotification = (notification: NotificationType) => {
       if (notification.type === "REQ") {
         queryClient.setQueryData(["friendreqs"], (data: any) => {
-          return [notification, ...(data || [])];
+          const newData = [notification, ...(data || [])];
+          queryClient.invalidateQueries({ queryKey: ["friendreqs"] });
+          return newData;
         });
       }
     };
