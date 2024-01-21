@@ -4,23 +4,61 @@ import React from "react";
 import UserCard from "./UserCard";
 import SearchBar from "./SearchBar";
 import AcceptDecline from "./AcceptDecline";
-import { useSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
+import socket from "@/lib/socket";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import getFriendReqs from "@/app/actions/getFriendReqs";
+import getFriends from "@/app/actions/getFriends";
 
 interface SidebarProps {
-  friends: TAcceptedFriedsArr | undefined;
-  friendReqs: FriendReqs | undefined;
-  FrnReqsPending?: boolean;
-  FriendsPending?: boolean;
+  session: any;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({
-  friends,
-  friendReqs,
-  FriendsPending,
-  FrnReqsPending,
-}) => {
-  const session = useSession();
+const Sidebar: React.FC<SidebarProps> = ({ session }) => {
+  const queryClient = useQueryClient();
+
+  const { data: friends, isPending: FriendsPending } =
+    useQuery<TAcceptedFriedsArr>({
+      queryKey: ["friends", session?.user?.id],
+      queryFn: getFriends,
+    });
+
+  const { data: friendReqs, isPending: FrnReqsPending } = useQuery<FriendReqs>({
+    queryKey: ["friendreqs", session?.user?.id],
+    queryFn: getFriendReqs,
+  });
+
+  useEffect(() => {
+    const handleFriendReqNotification = (notification: NotificationType) => {
+      if (notification.message && notification.type === "REQ") {
+        queryClient.setQueryData(["friendreqs"], (data: any) => {
+          const newData = [notification, ...(data || [])];
+          queryClient.invalidateQueries({ queryKey: ["friendreqs"] });
+          return newData;
+        });
+      }
+    };
+
+    const handleUpdatedFriendList = (friend: any) => {
+      if (friend) {
+        queryClient.setQueryData(["friends"], (data: any) => {
+          const newFriend = friends && friends?.length > 0 ? friend[0] : friend;
+
+          return [newFriend[0], ...(data || [])];
+        });
+      }
+    };
+
+    socket.on("friendreq_notification", handleFriendReqNotification);
+    socket.on("updatedFriendsList", handleUpdatedFriendList);
+
+    return () => {
+      // Clean up the event listener when the component is unmounted
+      socket.off("friendreq_notification", handleFriendReqNotification);
+      socket.off("updatedFriendsList", handleUpdatedFriendList);
+    };
+  }, [socket]);
 
   return (
     <div className="relative flex flex-col gap-5 bg-zinc-100 border border-r-primary py-7 px-5 w-[350px] h-[88vh]">
@@ -40,7 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           )}
           {friends?.map((friend) => {
             const friendUser: UserDetail =
-              friend.requester?.id === session?.data?.user?.id
+              friend.requester?.id === session?.user?.id
                 ? friend.receiver
                 : friend.requester;
 
@@ -74,7 +112,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   >
                     <p>{friend?.requester?.username}</p>
                     <AcceptDecline
-                      receiverId={session?.data?.user?.id || ""}
+                      receiverId={session?.user?.id || ""}
                       requesterId={friend?.requester?.id || ""}
                       requesterUsername={friend?.requester?.username || ""}
                       requesterImage={friend?.requester?.image || ""}
