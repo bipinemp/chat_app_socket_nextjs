@@ -24,7 +24,9 @@ const UserCard: FC<UserCardProps> = ({ friendUser }) => {
         }
       )}
     >
-      {friendUser.image === "" || friendUser.image === null ? (
+      {!friendUser.image ||
+      friendUser.image === "" ||
+      friendUser.image === null ? (
         <div className="w-[45px] h-[45px] relative bg-destructive rounded-full flex items-center justify-center">
           <span className="absolute text-secondary font-bold text-lg">
             {friendUser.username?.charAt(0)}

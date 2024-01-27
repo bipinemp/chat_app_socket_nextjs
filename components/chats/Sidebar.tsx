@@ -56,6 +56,8 @@ const Sidebar: React.FC<SidebarProps> = ({ session }) => {
     };
   }, [socket, session?.user?.id]);
 
+  console.log(friends);
+
   return (
     <div className="relative flex flex-col gap-5 bg-zinc-100 border border-r-primary py-7 px-5 w-[350px] h-[88vh]">
       <div>
@@ -101,13 +103,15 @@ const Sidebar: React.FC<SidebarProps> = ({ session }) => {
             friendReqs
               ?.filter((friend) => friend?.requester?.username)
               .map((friend) => {
+                console.log(friend.requester);
                 return (
                   <div
                     key={friend?.requester?.id}
                     className="flex items-center justify-between border border-primary p-2 rounded"
                   >
                     <div className="flex gap-3 items-center">
-                      {friend?.requester?.image === "" ||
+                      {!friend?.requester.image ||
+                      friend?.requester?.image === "" ||
                       friend?.requester?.image === null ? (
                         <div className="w-[45px] h-[45px] relative bg-destructive rounded-full flex items-center justify-center">
                           <span className="absolute text-secondary font-bold text-lg">
